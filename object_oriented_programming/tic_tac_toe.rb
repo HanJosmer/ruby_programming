@@ -64,15 +64,16 @@ class TicTacToe
     end
 
     def winner?
+
         # define win conditions
-        win_conditions = [@cells[:aa] == @cells[:ab] && @cells[:ab] == @cells[:ac],
-                          @cells[:ba] == @cells[:bb] && @cells[:bb] == @cells[:bc],
-                          @cells[:ca] == @cells[:cb] && @cells[:cb] == @cells[:cc],
-                          @cells[:aa] == @cells[:bb] && @cells[:bb] == @cells[:cc],
-                          @cells[:ac] == @cells[:bb] && @cells[:bb] == @cells[:ca],
-                          @cells[:aa] == @cells[:ba] && @cells[:ba] == @cells[:ca],
-                          @cells[:ba] == @cells[:bb] && @cells[:bb] == @cells[:bc],
-                          @cells[:ca] == @cells[:cb] && @cells[:cb] == @cells[:cc]]
+        win_conditions = [@cells[:aa] == @cells[:ab] && @cells[:ab] == @cells[:ac] && @cells[:aa] != " ",
+                          @cells[:ba] == @cells[:bb] && @cells[:bb] == @cells[:bc] && @cells[:ba] != " ",
+                          @cells[:ca] == @cells[:cb] && @cells[:cb] == @cells[:cc] && @cells[:ca] != " ",
+                          @cells[:aa] == @cells[:bb] && @cells[:bb] == @cells[:cc] && @cells[:aa] != " ",
+                          @cells[:ac] == @cells[:bb] && @cells[:bb] == @cells[:ca] && @cells[:ac] != " ",
+                          @cells[:aa] == @cells[:ba] && @cells[:ba] == @cells[:ca] && @cells[:aa] != " ",
+                          @cells[:ab] == @cells[:bb] && @cells[:bb] == @cells[:cb] && @cells[:ab] != " ",
+                          @cells[:ac] == @cells[:bc] && @cells[:bc] == @cells[:cc] && @cells[:ac] != " "]
         win_conditions.any?
     end
 
