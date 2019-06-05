@@ -1,90 +1,111 @@
 class Mastermind
 
-    COLORS = ["black", "red", "yellow", "green", "white", "blue"]
-  
-    def initialize
-      case codemaster?
-      when true
-        Codemaster.new
-      when false
-        Codebreaker.new
+  COLORS = ["black", "red", "yellow", "green", "white", "blue"]
+
+  def initialize
+    welcome
+    case codemaster?
+    when true
+      Codemaster.new
+    when false
+      Codebreaker.new
+    else
+      puts "uh oh"
+    end
+  end
+
+  def welcome
+    puts "Welcome to Mastermind!  If you've never played before, please review the rules at"
+    puts "https://en.wikipedia.org/wiki/Mastermind_(board_game)"; puts
+    puts "The available colors are: #{COLORS.join(", ")}" + "\n"; puts
+  end
+
+  def codemaster?
+    print "Would you like to be the codemaster?: "
+    case get_codemaster_input
+      when "yes", "y"
+        true
+      when "no", "n"
+        false
       else
-        puts "uh oh"
-      end
+        puts "uh oh.  the request_codemaster_input method must be broken"
     end
-  
-    def codemaster?
-      print "Would you like to be the codemaster?: "
-      case get_codemaster_input
-        when "yes" || "y"
-          true
-        when "no" || "n"
-          false
-        else
-          puts "uh oh.  the request_codemaster_input method must be broken"
-      end
-    end      
-  
-    def get_codemaster_input
-      acceptable_input = ["yes", "y", "no", "n"]
+  end      
+
+  def get_codemaster_input
+    acceptable_input = ["yes", "y", "no", "n"]
+    codemaster = gets.chomp.downcase
+    until acceptable_input.include? codemaster
+      print "Please use \"yes\", \"y\", \"no\", or \"n\" to select your choice: "
       codemaster = gets.chomp.downcase
-      until acceptable_input.include? codemaster
-        print "Please use \"yes\", \"y\", \"no\", or \"n\" to select your choice: "
-        codemaster = gets.chomp.downcase
-      end
-      codemaster
     end
-  
-    def get_code_input
+    codemaster
+  end
+
+  def get_code_input
+    input = gets.chomp.split(", ")
+    until input.all? { |color| COLORS.include? color.downcase } && input.length == 4
+      puts "Invalid format or colors.  Please use the format [color], [color], [color], [color]"
+      print "Please try again:"
       input = gets.chomp.split(", ")
-      until input.all? { |color| COLORS.include? color.downcase } && input.length == 4
-        puts "Invalid format or colors.  Please try again:"
-        input = gets.chomp.split(", ")
-      end
-      input
     end
+    puts
+    input
   end
+end
   
   
-  
-  class Codemaster < Mastermind
-  
-    def initialize
-      puts "Code under construction.  Please excuse the mess"
-      print "Please provide a code, codemaster: "
-      @current_guess = [COLORS.sample, COLORS.sample, COLORS.sample, COLORS.sample]
-      @previous_guesses = Array.new
-      @turn_count = 1
-      @player_code = get_code_input
-      puts @player_code.join(", ")
-      # @previous_guesses.push(@current_guess)
-      # computer_guess
-      while @previous_guesses.include? @current_guess
-        computer_guess
-        @previous_guesses << @current_guess
-        @turn_count += 1
-        break if @current_guess == @player_code
-      end
-      puts "Congratulations!  It took the computer #{@turn_count} #{@turn_count > 1 ? "guesses" : "guess"} to break your code!"
-      print @previous_guesses
+class Codemaster < Mastermind
+
+  # I have not been able to implement a solution to the computer making repeat guesses.
+  # Every attempt seems to break the existing code so for now I will leave it here in a semi-functional state.
+
+  def initialize
+
+    print "\nPlease provide a code, codemaster: "
+
+    # initialize instance variables
+    @current_guess = [nil, nil, nil, nil]
+    @turn_count = 0
+    @player_code = get_code_input
+
+    # computer will take turns until it correctly guesses the player's code
+    print "Computer's guesses:\n"
+    until winner?
+      computer_guess
+      @turn_count += 1
+
+      # let the player know how the computer has guessed this turn
+      print "Guess: #{@turn_count}: " + @current_guess.join(", ") + "\n"
     end
-  
-    def computer_guess
-      @current_guess.each_with_index do |guess, index|
-        if guess == @player_code[index]
-          next
-        else
-          @current_guess[index] = COLORS.sample
-        end
-      end
-      puts @current_guess.join(", ")
-    end
-  
-    def winner?
-      @current_guess == @player_code
-    end
-  
+
+    # alert the player when the game is concluded
+    print "\nCongratulations!  It took the computer #{@turn_count} #{@turn_count > 1 ? "guesses" : "guess"} to break your code!"
+
   end
+
+  def computer_guess
+
+    # test each item in current guess against player code; if correct color in correct location, keep
+    @current_guess.each_with_index do |guess, index|
+      if guess == @player_code[index]
+        next
+      else
+        # choose a random color
+        @current_guess[index] = COLORS.sample
+      end
+    end
+
+  end
+
+  def winner?
+    @current_guess == @player_code
+  end
+
+  def check_for_duplicate_guess
+  end
+
+end
   
   class Codebreaker < Mastermind
   
@@ -92,7 +113,7 @@ class Mastermind
       @code = generate_code
       @player_guess = nil
       @turn_count = 0
-      print "Answer key: " + @code.join(", ") + "\n"
+      print "\nAnswer key: " + @code.join(", ") + "\n"
       until winner?
           @player_guess = player_guess
           provide_feedback
