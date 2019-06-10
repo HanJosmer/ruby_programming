@@ -1,0 +1,1 @@
+{"solution":"allocution","previous_guesses":["f","l","o","e","w","i"],"guesses_remaining":3}
