@@ -13,23 +13,23 @@ class Hangman
             print "Which file would you like to load? "
             load_game_from_file sanitize_text(gets)
         else
-            @solution = load_dictionary.sample
+            dictionary = load_dictionary  # only load dictionary if the user decides to begin a new game
+            @solution = select_word(dictionary) until @solution.to_s.length >= 5 && @solution.to_s.length <= 12  # ensure that the randomly chosed word is an appropriate length
             @previous_guesses = []
-            @guesses_remaining = 6
+            @guesses_remaining = 6  # default number of guesses based on wikipedia rules.  may allow player to later decide how many guesses permitted
         end
 
         until winner? || @guesses_remaining <= 0
-            # if @guesses_remaining == 3
-            #     print "Would you liked to save your game? "
-            #     save_game
-            # end
             check_guess(get_user_input)
             show_guesses
-            print "\nYou have #{@guesses_remaining} #{@guesses_remaining > 1 ? "guesses" : "guess"} remaining!  " unless @guesses_remaining <= 0
+            unless @guesses_remaining <= 0 || winner?
+                print "\nYou have #{@guesses_remaining} #{@guesses_remaining > 1 ? "guesses" : "guess"} remaining!  Would you like to save your game?  " 
+                save_game if save_game?  # give player option to save their game after every guess.  not the best UX, may add option to #get_user_input method later
+            end 
         end
 
         if winner?
-            puts "Congratulations!  You managed to guess the secret word!"
+            puts "\nCongratulations!  You managed to guess the secret word!"
         else
             print "\nSorry, you lost! The solution was \"#{@solution}\"\n"
         end
@@ -39,14 +39,14 @@ class Hangman
         unless @solution.include? guess
             @guesses_remaining -= 1
         end
-        @previous_guesses.push(guess)
+        @previous_guesses.push(guess)  # add guess to array of previous guesses.  used to prevent user from repeating guesses
     end
 
 
     def get_user_input
         
         # this can be refactored later into a single get_user_input method
-        print "Please choose a letter: "
+        print "\nPlease choose a letter: "
         input = sanitize_text(gets)
         # check that the user provides a single, alphabetical character that has not been guessed yet
         until input.length == 1 && !@previous_guesses.include?(input) && input.match?(/^[A-Za-z]+$/)
@@ -99,8 +99,14 @@ class Hangman
                         :previous_guesses => @previous_guesses,
                         :guesses_remaining => @guesses_remaining
                      })
-        print "Please choose a name for your saved game: "
-        File.open("#{gets.chomp.downcase}.txt", "w") { |file| file.puts saved_game }
+        print "\nPlease choose a name for your saved game: "
+        File.open("#{gets.chomp.downcase}.json", "w") { |file| file.print saved_game }  # saves game state as JSON file
+        exit  # exits program
+    end
+
+    def save_game?
+        input = gets.chomp.downcase until ["yes", "no"].include? input  #  needs to provide feedback to the user when provided with input other than "yes" or "no"
+        {"yes" => true, "no" => false}[input]
     end
 
     def select_word dictionary
