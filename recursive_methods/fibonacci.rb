@@ -7,23 +7,8 @@ def fibs n
     puts result.join(", ")
 end
 
-def fibs_rec n, sequence = [0, 1, 1], printed = []
-    if n <= 1
-        # print n
-        return n
-    else
-        result = fibs_rec(n-2, sequence, printed) + fibs_rec(n-1, sequence, printed)
-        unless sequence.include? result
-            sequence.push result
-            sequence.each do |item|
-                unless printed.include? item
-                    print item.to_s + ", "
-                    printed.push item
-                end
-            end
-            return result
-        end  
-        result   
-    end
-
+def fibs_rec n
+    return 0 if n == 0
+    return 1 if n == 1
+    return fibs_rec(n-2) + fibs_rec(n-1)
 end
