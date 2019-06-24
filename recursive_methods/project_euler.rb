@@ -25,9 +25,18 @@ def largest_prime n, i=n, factors=[]
     largest_prime(n, i-1, factors)
 end
 
-def largest_palindrome
-    # todo
-end
+# def largest_palindrome a=999, b=999, palindromes=[]
+#     if (a * b).to_s == (a * b).to_s.reverse
+#         palindromes.push(a * b)
+#         largest_palindrome(a, b-1, palindromes)
+#     elsif a != 1 && b == 1
+#         return largest_palindrome(a-1, 999, palindromes)
+#     elsif a == 1 && b == 1
+#         return palindromes.max
+#     else
+#         largest_palindrome(a, b-1, palindromes)
+#     end
+# end
 
 def smallest_multiple n, i=1, multiple=1
     return multiple if i > n
