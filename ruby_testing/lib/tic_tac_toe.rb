@@ -1,5 +1,8 @@
 class TicTacToe
 
+    attr_reader :allowed_moves
+    attr_accessor :player_one_turn
+
     def initialize
 
         # player one will start
@@ -8,23 +11,25 @@ class TicTacToe
         # initialize the game cells
         @cell_map = [:aa, :ab, :ac, :ba, :bb, :bc, :ca, :cb, :cc]
 
-        @cell_translation = {true: "X", false: "O"}
+        @cell_translation = {true: "X", false: "O", nil: " "}
 
         @cells = {
-            aa: " ",
-            ab: " ",
-            ac: " ",
-            ba: " ",
-            bb: " ",
-            bc: " ",
-            ca: " ",
-            cb: " ",
-            cc: " "
+            aa: :nil,
+            ab: :nil,
+            ac: :nil,
+            ba: :nil,
+            bb: :nil,
+            bc: :nil,
+            ca: :nil,
+            cb: :nil,
+            cc: :nil
         }
 
         # initialize the permitted moveset
         @allowed_moves = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    end
 
+    def play_game
         # welcome players, draw the board, and begin the first turn
         puts ""
         puts "Welcome to Tic Tac Toe!  Players will take turns filling in cells on the board in order to match three in a row."
@@ -67,24 +72,25 @@ class TicTacToe
 
     def winner?
 
-        # define win conditions
-        win_conditions = [@cells[:aa] == @cells[:ab] && @cells[:ab] == @cells[:ac] && @cells[:aa],
-                          @cells[:ba] == @cells[:bb] && @cells[:bb] == @cells[:bc] && @cells[:ba],
-                          @cells[:ca] == @cells[:cb] && @cells[:cb] == @cells[:cc] && @cells[:ca],
-                          @cells[:aa] == @cells[:bb] && @cells[:bb] == @cells[:cc] && @cells[:aa],
-                          @cells[:ac] == @cells[:bb] && @cells[:bb] == @cells[:ca] && @cells[:ac],
-                          @cells[:aa] == @cells[:ba] && @cells[:ba] == @cells[:ca] && @cells[:aa],
-                          @cells[:ab] == @cells[:bb] && @cells[:bb] == @cells[:cb] && @cells[:ab],
-                          @cells[:ac] == @cells[:bc] && @cells[:bc] == @cells[:cc] && @cells[:ac]]
+        # define win condition
+        win_conditions = [@cells[:aa] == @cells[:ab] && @cells[:ab] == @cells[:ac] && @cells[:aa] != :nil, # top row
+                          @cells[:ba] == @cells[:bb] && @cells[:bb] == @cells[:bc] && @cells[:ba] != :nil, # middle row
+                          @cells[:ca] == @cells[:cb] && @cells[:cb] == @cells[:cc] && @cells[:ca] != :nil, # bottom row
+                          @cells[:aa] == @cells[:bb] && @cells[:bb] == @cells[:cc] && @cells[:aa] != :nil, # top left diag
+                          @cells[:ac] == @cells[:bb] && @cells[:bb] == @cells[:ca] && @cells[:ac] != :nil, # top right diag
+                          @cells[:aa] == @cells[:ba] && @cells[:ba] == @cells[:ca] && @cells[:aa] != :nil, # left col
+                          @cells[:ab] == @cells[:bb] && @cells[:bb] == @cells[:cb] && @cells[:ab] != :nil, # middle col
+                          @cells[:ac] == @cells[:bc] && @cells[:bc] == @cells[:cc] && @cells[:ac] != :nil] # right col
         win_conditions.any?
     end
 
-    def player_choice
-        move = nil
+    def player_choice (move = nil)
+        # move = nil
         until @allowed_moves.include?(move.to_i)
-            move = gets.chomp
+            move = gets.chomp if move.nil?
             unless @allowed_moves.include?(move.to_i)
                 print "Invalid move.  Please try again: "
+                move = nil
             end
         end
         return move
@@ -95,7 +101,7 @@ class TicTacToe
     end
 
     def update_board move
-        @cells[@cell_map[move.to_i - 1]] = @player_one_turn ? true : false
+        @cells[@cell_map[move.to_i - 1]] = @player_one_turn ? :true : :false
     end
 
     def switch_turns
